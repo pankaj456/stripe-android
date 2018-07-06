@@ -6,12 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.stripe.android.model.StripeJsonUtils.optLong;
+import static com.stripe.android.model.StripeJsonUtils.optString;
 import static com.stripe.android.model.StripeJsonUtils.putLongIfNotNull;
 import static com.stripe.android.model.StripeJsonUtils.putStringIfNotNull;
 
@@ -118,6 +121,33 @@ public class ShippingMethod extends StripeJsonModel implements Parcelable {
         map.put(FIELD_IDENTIFIER, mIdentifier);
         map.put(FIELD_LABEL, mLabel);
         return map;
+    }
+
+
+    @Nullable
+    public static ShippingMethod fromString(@Nullable String jsonString) {
+        try {
+            return fromJson(new JSONObject(jsonString));
+        } catch (JSONException ignored) {
+            return null;
+        }
+    }
+
+    public static ShippingMethod fromJson(@Nullable JSONObject jsonObject) {
+        if (jsonObject == null) {
+            return null;
+        }
+        Long amount = optLong(jsonObject, FIELD_AMOUNT);
+        String label = optString(jsonObject, FIELD_LABEL);
+        String detail = optString(jsonObject, FIELD_DETAIL);
+        String identifier = optString(jsonObject, FIELD_IDENTIFIER);
+        String currencyCode = optString(jsonObject, FIELD_CURRENCY_CODE);
+        return new ShippingMethod(
+                label,
+                identifier,
+                detail,
+                amount,
+                currencyCode);
     }
 
     /************** Parcelable *********************/
